@@ -7,13 +7,16 @@
 using namespace std;
 
 void displayCommands(){
-    fprintf(stderr, "\r\nThis app was made for calculating. It aims for simple inputs, to speed up usage process.\r\n\r\n");
     fprintf(stderr, "You can use one of the commands listed below:\t");
     fprintf(stderr, "<> is mandatory argument, [] is optional\r\n");
     fprintf(stderr, "\tquad - <a>x^2 + <b>x + [c] = 0\tsolves quadratic function\r\n");
     fprintf(stderr, "\tequ - followed by sets of <a>x + <b>y = <c>\tsolves system of equations\r\n");
     fprintf(stderr, "\tdist - <x1> <y1> [z1] <x2> <y2> [z2]\tcalculates distance between points\r\n");
+    fprintf(stderr, "\tdist - <x1> <y1> [z1] <x2> <y2> [z2]\tcalculates point-point distance\r\n");
+    fprintf(stderr, "\t(pp)dist - <A>x + <B>y + <C>z + <D> = 0 (<x>, <y>, <z>)\tcalculates point-plane distance\r\n");
     fprintf(stderr, "\tvec - <x1> <y1> [z1] <x2> <y2> [z2]\tcalculates vector between points\r\n");
+    fprintf(stderr, "\tcrossprod - <x1> <y1> [z1] <x2> <y2> [z2]\tcalculates cross product of vectors\r\n");    
+    fprintf(stderr, "\tplane - <x1> <y1> [z1] <x2> <y2> [z2]\tcalculates plane equation\r\n");    
 
     fprintf(stderr, "\thelp - displays this message\r\n\r\n");
     fprintf(stderr, "\tWrite help, h or ? after any command to gain more info.\r\n");
@@ -24,22 +27,13 @@ bool checkForHelp(int argc, char const *argv[]){
 }
 
 int main(int argc, char const *argv[]){
-    
-    // fprintf(stderr, "Given args:");
-    // for (int i = 1; i < argc; i++){
-    //     fprintf(stderr, "\t%d - %s", i, argv[i]);   
-    // }
-    // fprintf(stderr, "\r\n");
-    // fprintf(stderr, "argc = %d\r\n", argc);
 
     if(argc < 2){
         displayCommands();
         return 0;
     }
 
-    if(strcmp(argv[1], "help") == 0 || strcmp(argv[1], "h") == 0){
-        displayCommands();
-    }else if(strcmp(argv[1], "quad") == 0 || strcmp(argv[1], "quadratic") == 0){
+    if(strcmp(argv[1], "quad") == 0 || strcmp(argv[1], "quadratic") == 0){
 
         if(checkForHelp(argc, argv)){
             fprintf(stderr, "Invalid number of arguments!\r\n");
@@ -63,28 +57,31 @@ int main(int argc, char const *argv[]){
             fprintf(stderr, "Repeat this pattern:\r\n");
             fprintf(stderr, "\t- <a>x + <b>y = <c> \r\n");
         }else 
-        if(argc == 8){        // Zrobić obsługę większej ilości argumentów argc % == 2
+        if(argc == 8){        // made infinite arguments handling argc % == 2
             solveEquations(stod(argv[2]), stod(argv[3]), stod(argv[4]), stod(argv[5]), stod(argv[6]), stod(argv[7]));
         }else{
             fprintf(stderr, "Invalid arguments!\r\n");
         }
 
-    }else if(strcmp(argv[1], "dist") == 0 || strcmp(argv[1], "distance") == 0){
+    }else if(strcmp(argv[1], "dist") == 0 || strcmp(argv[1], "distance") == 0 || strcmp(argv[1], "ppdist") == 0){
         
         if(checkForHelp(argc, argv)){
             fprintf(stderr, "Invalid number of arguments!\r\n");
             fprintf(stderr, "Please follow one of patterns lsited below:\r\n");
             fprintf(stderr, "\t4 arguments - (<x1>, <y1>) (<x2>, <y2>)\r\n");
             fprintf(stderr, "\t6 arguments - (<x1>, <y1>, <z1>) (<x2>, <y2>, <z2>)\r\n");
+            fprintf(stderr, "\t7 arguments -  <A>x + <B>y + <C>z + <D> = 0 (<x>, <y>, <z>) - point to plane distance\r\n");
         }else if(argc == 6){
             calculateDistance(stod(argv[2]), stod(argv[3]), stod(argv[4]), stod(argv[5]));
         }else if(argc == 8){
             calculateDistance(stod(argv[2]), stod(argv[3]), stod(argv[4]), stod(argv[5]), stod(argv[6]), stod(argv[7]));   
+        }else if(argc == 9){
+            pointToPlaneDistance(stod(argv[2]), stod(argv[3]), stod(argv[4]), stod(argv[5]), stod(argv[6]), stod(argv[7]), stod(argv[8]));   
         }else{
             fprintf(stderr, "Invalid number of arguments!\r\n");
         }
         
-    }else if(strcmp(argv[1], "vec") == 0 || strcmp(argv[1], "vect") == 0 || strcmp(argv[1], "vector") == 0){
+    }else if(strcmp(argv[1], "vec") == 0 || strcmp(argv[1], "vector") == 0){
 
         if(checkForHelp(argc, argv)){
             fprintf(stderr, "Invalid number of arguments!\r\n");
@@ -99,12 +96,26 @@ int main(int argc, char const *argv[]){
             fprintf(stderr, "Invalid number of arguments!\r\n");
         }
 
+    }else if(strcmp(argv[1], "veccross") == 0 || strcmp(argv[1], "crossprod") == 0){
+
+        if(checkForHelp(argc, argv)){
+            fprintf(stderr, "Invalid number of arguments!\r\n");
+            fprintf(stderr, "\t6 arguments - [<x1>, <y1>, <z1>] [<x2>, <y2>, <z2>]\r\n");
+            fprintf(stderr, "\t9 arguments - (<x1>, <y1>, <z1>) (<x2>, <y2>, <z2>) (<x3>, <y3>, <z3>)\r\n");
+        }else if(argc == 8){
+            vectorCrossProduct(stod(argv[2]), stod(argv[3]), stod(argv[4]), stod(argv[5]), stod(argv[6]), stod(argv[7]));
+        }else if(argc == 10){
+            vectorCrossProduct(stod(argv[2]), stod(argv[3]), stod(argv[4]), stod(argv[5]), stod(argv[6]), stod(argv[7]), stod(argv[8]), stod(argv[9]), stod(argv[10]));   
+        }else{
+            fprintf(stderr, "Invalid number of arguments!\r\n");
+        }
+
     }else if(strcmp(argv[1], "plane") == 0 ){
 
         if(checkForHelp(argc, argv)){
             fprintf(stderr, "Invalid number of arguments!\r\n");
             fprintf(stderr, "Please follow one of patterns lsited below:\r\n");
-            fprintf(stderr, "\t6 arguments - (<x1>, <y1>, <z1>) (<x2>, <y2>, <z2>) (<x3>, <y3>, <z3>)\r\n");
+            fprintf(stderr, "\t9 arguments - (<x1>, <y1>, <z1>) (<x2>, <y2>, <z2>) (<x3>, <y3>, <z3>)\r\n");
         }else if(argc == 8){
             planeEquation(stod(argv[2]), stod(argv[3]), stod(argv[4]), stod(argv[5]), stod(argv[6]), stod(argv[7]));   
         }else if(argc == 11){
@@ -113,22 +124,19 @@ int main(int argc, char const *argv[]){
             fprintf(stderr, "Invalid number of arguments!\r\n");
         }
 
-    }else if(strcmp(argv[1], "normvec") == 0 || strcmp(argv[1], "normalvector")){
-        if(checkForHelp(argc, argv)){
-            fprintf(stderr, "Invalid number of arguments!\r\n");
-            fprintf(stderr, "Please follow one of patterns lsited below:\r\n");
-            fprintf(stderr, "\t4 arguments - <A>x + <B>y + <C>z + <D> = 0\tdefults to (0, 0, 0)\r\n");
-            fprintf(stderr, "\t7 arguments - <A>x + <B>y + <C>z + <D> = 0\t(<x>, <y>, <z>) - point through which vector goes\r\n");
-        }else if(argc == 6){
-            normalVector(stod(argv[2]), stod(argv[3]), stod(argv[4]), stod(argv[5]));
-        }else if(argc == 9){
-            normalVector(stod(argv[2]), stod(argv[3]), stod(argv[4]), stod(argv[5]), stod(argv[6]), stod(argv[7]), stod(argv[8]));   
-        }else{
-            fprintf(stderr, "Invalid number of arguments!\r\n");
-        }
-
-    }else if(strcmp(argv[1], "ppdist") == 0 || strcmp(argv[1], "ptplndist") == 0 || strcmp(argv[1], "pointplanedistance") == 0){
-
+    // }else if(strcmp(argv[1], "normvec") == 0 || strcmp(argv[1], "normalvector")){
+        // if(checkForHelp(argc, argv)){
+        //     fprintf(stderr, "Invalid number of arguments!\r\n");
+        //     fprintf(stderr, "Please follow one of patterns lsited below:\r\n");
+        //     fprintf(stderr, "\t4 arguments - <A>x + <B>y + <C>z + <D> = 0\tdefults to (0, 0, 0)\r\n");
+        //     fprintf(stderr, "\t7 arguments - <A>x + <B>y + <C>z + <D> = 0\t(<x>, <y>, <z>) - point through which vector goes\r\n");
+        // }else if(argc == 6){
+        //     normalVector(stod(argv[2]), stod(argv[3]), stod(argv[4]), stod(argv[5]));
+        // }else if(argc == 9){
+        //     normalVector(stod(argv[2]), stod(argv[3]), stod(argv[4]), stod(argv[5]), stod(argv[6]), stod(argv[7]), stod(argv[8]));   
+        // }else{
+        //     fprintf(stderr, "Invalid number of arguments!\r\n");
+        // }
 
     }else if(false){
 
@@ -138,12 +146,14 @@ int main(int argc, char const *argv[]){
 
     }else{
 
+        if(strcmp(argv[1], "help") == 0 || strcmp(argv[1], "h") == 0 || strcmp(argv[1], "?") == 0){
+            fprintf(stderr, "\r\nThis app was made for calculating. It aims for simple inputs, to speed up usage process.\r\n\r\n");
+        }else{
+            fprintf(stderr, "Invalid arguments!\r\n");
+        }
         displayCommands();
 
     }
-
-
-    
 
 
     return 0;
